@@ -1,0 +1,8 @@
+* Image Overlay
+
+[[file:./EmacsIcon.png]]
+
+[[file:GNU_Emacs_26.2_screenshot.png][Emacs Screenshort]]
+
+https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/GNU_Emacs_editing_C_code.png/960px-GNU_Emacs_editing_C_code.png
+

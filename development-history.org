@@ -1,0 +1,24 @@
+#+title: Development history
+
+* Dec 18, 2024
+
+I find a similar package named [[https://github.com/jcfk/org-sliced-images][org-sliced-images]], so I study some code from it to make my code simpler.
+
+In Emacs, we can display a part of an image by using ('display . (list (list 'slice x y dx dy) image)), without needing to actually slice the image using ImageMagick, so I remove the dependency about ImageMagick.
+
+
+* Dec 16, 2024
+There have some issues in last version:
+1. There is slow when ImageMagick handle remote images.
+2. Though I will delete the placeholders when the user removes the overlays, there is still a risk of polluting the users' buffer.
+
+So I use asynchronous processes to run ImageMagick, guaranteeing that it will not freeze Emacs. On the other hand, I removed the placeholder and just placed some overlays on the original URL text.
+
+
+* May 12, 2023
+
+I got the idea to slice the image into many pieces, making Emacs display the pieces line by line.
+
+1. Use the CLI /[[https://imagemagick.org/][ImageMagick]]/ to slice images.
+2. Insert some special text like "__#_#_@@_#_#__" as placeholder, and put an overlay on that placeholder to show image pieces. 
+
