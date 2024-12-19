@@ -129,6 +129,7 @@ If BEFORE-STRING or AFTER-STRING not nil, put overlay before-string or after-str
       (overlay-put overlay 'after-string after-string))
     (overlay-put overlay 'display display)
     (overlay-put overlay 'face 'default)
+    (overlay-put overlay 'overlay-type "image-slicing")
     overlay))
 
 (defun image-slicing-slice (image-src max-rows)
@@ -225,7 +226,9 @@ If BEFORE-STRING or AFTER-STRING not nil, put overlay before-string or after-str
     (cancel-timer image-slicing--timer)
     (setq image-slicing--timer nil))
   (mapc #'delete-overlay image-slicing--overlay-list)
-  (setq image-slicing--overlay-list nil))
+  (setq image-slicing--overlay-list nil)
+
+  (remove-hook 'post-command-hook #'image-slicing-post-command t))
 
 (defun image-slicing-create-image (image-src)
   "Create an image object by IMAGE-SRC.
@@ -237,10 +240,21 @@ If the image width is greater than `image-slicing-max-width`, scale it down."
       (setf (image-property image :width) image-slicing-max-width))
     image))
 
+(defun image-slicing-post-command ()
+  "Handle cursor visibility in eww-mode when over image slicing overlays.
+This function is installed on `post-command-hook'."
+  (when (derived-mode-p 'eww-mode)
+    (setq cursor-type (not (cl-some (lambda (overlay)
+                                      (string-equal (overlay-get overlay 'overlay-type)
+                                                    "image-slicing"))
+                                    (overlays-at (point)))))))
+
 (defun image-slicing-render-buffer ()
   "Auto image overlay."
   (setq image-slicing--links (image-slicing--overlay-list-links))
-  (setq image-slicing--timer (image-slicing--create-render-timer)))
+  (setq image-slicing--timer (image-slicing--create-render-timer))
+
+  (add-hook 'post-command-hook #'image-slicing-post-command nil t))
 
 (defun image-slicing-tag-img (dom &optional _url)
   "Parse img DOM."
